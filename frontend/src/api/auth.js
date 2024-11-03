@@ -54,3 +54,47 @@ export const signin = async (email, password) => {
         };
     }
 };
+
+// Get user profile data function
+export const getUserProfile = async (token) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/profile`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return {
+            success: true,
+            data: response.data,
+        };
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        return {
+            success: false,
+            message: error.response?.data?.message || "An error occurred while fetching user profile.",
+        };
+    }
+};
+
+// Update user profile data function
+export const updateUserProfile = async (token, userData) => {
+    try {
+        const response = await axios.put(`${BASE_URL}/update`, userData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return {
+            success: true,
+            message: "User profile updated successfully!",
+        };
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        return {
+            success: false,
+            message: error.response?.data?.message || "An error occurred while updating user profile.",
+        };
+    }
+};

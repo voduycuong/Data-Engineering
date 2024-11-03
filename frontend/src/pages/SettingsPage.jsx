@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Tabs, TabList, TabPanels, Tab, TabPanel,
     FormControl, FormLabel, Input, Select, Switch,
@@ -7,17 +7,85 @@ import {
 } from '@chakra-ui/react';
 import { FiEdit2 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const BASE_URL = 'http://localhost:3000/api/auth';
 
 export default function SettingsPage() {
+    const [userData, setUserData] = useState({
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+        dob: '',
+        address: '',
+        city: '',
+        country: '',
+    });
+
+    const [notificationPreferences, setNotificationPreferences] = useState({
+        allowAll: false,
+        sms: false,
+        emails: false,
+        pushNotifications: false,
+    });
+
+    const [language, setLanguage] = useState('en');
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Check for token
         const token = sessionStorage.getItem('token');
         if (!token) {
             navigate('/signin');
+        } else {
+            axios.get(`${BASE_URL}/profile`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(response => {
+                console.log('Fetched user data:', response.data); // Debug log
+                setUserData(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+            });
         }
     }, [navigate]);
+    
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setUserData(prevState => ({
+            ...prevState,
+            [id]: value,
+        }));
+    };
+
+    const handleNotificationChange = (e) => {
+        const { id, checked } = e.target;
+        setNotificationPreferences(prevState => ({
+            ...prevState,
+            [id]: checked,
+        }));
+    };
+
+    const handleLanguageChange = (e) => {
+        setLanguage(e.target.value);
+    };
+
+    const handleSave = () => {
+        const token = sessionStorage.getItem('token');
+        axios.put(`${BASE_URL}/update`, userData, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(response => {
+            alert('User information updated successfully!');
+        })
+        .catch(error => {
+            console.error('Error updating user data:', error);
+            alert('Failed to update user information.');
+        });
+    };
 
     return (
         <Flex
@@ -74,7 +142,7 @@ export default function SettingsPage() {
                             _selected={{ color: 'blue.500', borderBottom: '4px solid', borderBottomColor: 'blue.500' }}
                             _hover={{ color: 'blue.500', borderColor: 'white' }}
                         >
-                            Preferences
+                            Notifications
                         </Tab>
                         <Tab
                             fontSize={{ base: 'md', md: 'lg' }}
@@ -85,11 +153,12 @@ export default function SettingsPage() {
                             _selected={{ color: 'blue.500', borderBottom: '4px solid', borderBottomColor: 'blue.500' }}
                             _hover={{ color: 'blue.500', borderColor: 'white' }}
                         >
-                            Security
+                            Language
                         </Tab>
                     </TabList>
 
                     <TabPanels>
+                        {/* Edit Profile Panel */}
                         <TabPanel>
                             <Flex alignItems="flex-start" mb={6} className="mb-6">
                                 <Avatar size={{ base: 'lg', md: '2xl' }} src="avatar-1.jpg" mt={6} />
@@ -109,100 +178,89 @@ export default function SettingsPage() {
                                     <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={8} className="p-4">
                                         <FormControl id="name">
                                             <FormLabel className="text-lg md:text-xl">Your Name</FormLabel>
-                                            <Input placeholder="Your name" size="lg" className="border-gray-300" />
+                                            <Input value={userData.name || ''} onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                         <FormControl id="username">
                                             <FormLabel className="text-lg md:text-xl">User Name</FormLabel>
-                                            <Input placeholder="Your user name" size="lg" className="border-gray-300" />
+                                            <Input value={userData.username || ''} onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                         <FormControl id="email">
                                             <FormLabel className="text-lg md:text-xl">Email</FormLabel>
-                                            <Input type="email" placeholder="Your email" size="lg" className="border-gray-300" />
+                                            <Input type="email" value={userData.email || ''} onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                         <FormControl id="password">
                                             <FormLabel className="text-lg md:text-xl">Password</FormLabel>
-                                            <Input type="password" placeholder="Your password" size="lg" className="border-gray-300" />
+                                            <Input type="password" placeholder="********" onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                         <FormControl id="dob">
                                             <FormLabel className="text-lg md:text-xl">Date of Birth</FormLabel>
-                                            <Input type="date" size="lg" className="border-gray-300" />
+                                            <Input type="date" value={userData.dob || ''} onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                         <FormControl id="address">
                                             <FormLabel className="text-lg md:text-xl">Address</FormLabel>
-                                            <Input placeholder="Your address" size="lg" className="border-gray-300" />
+                                            <Input value={userData.address || ''} onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                         <FormControl id="city">
                                             <FormLabel className="text-lg md:text-xl">City</FormLabel>
-                                            <Input placeholder="Your city" size="lg" className="border-gray-300" />
+                                            <Input value={userData.city || ''} onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                         <FormControl id="country">
                                             <FormLabel className="text-lg md:text-xl">Country</FormLabel>
-                                            <Input placeholder="Your Country" size="lg" className="border-gray-300" />
+                                            <Input value={userData.country || ''} onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                     </Grid>
                                 </Box>
                             </Flex>
                         </TabPanel>
 
+                        {/* Notifications Panel */}
                         <TabPanel>
-                            <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={8} className="p-4">
-                                <FormControl>
-                                    <FormLabel className="text-lg md:text-xl">Currency</FormLabel>
-                                    <Select placeholder="Select Currency" size="lg" className="border-gray-300">
-                                        <option>US Dollar</option>
-                                        <option>Euro</option>
-                                    </Select>
-                                </FormControl>
-                                <FormControl>
-                                    <FormLabel className="text-lg md:text-xl">Time Zone</FormLabel>
-                                    <Select placeholder="Select Time Zone" size="lg" className="border-gray-300">
-                                        <option>(GMT+00:00) UTC</option>
-                                        <option>(GMT-08:00) Pacific Time</option>
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Stack spacing={6} mt={6} className="p-4">
+                            <Stack spacing={6} className="p-4">
                                 <FormControl display="flex" alignItems="center">
-                                    <FormLabel className="text-lg md:text-xl mb-0">Notification</FormLabel>
-                                    <Switch colorScheme="blue" size="lg" />
+                                    <FormLabel htmlFor="allowAll" mb="0">
+                                        Allow All Notifications
+                                    </FormLabel>
+                                    <Switch id="allowAll" isChecked={notificationPreferences.allowAll} onChange={handleNotificationChange} />
+                                </FormControl>
+                                <FormControl display="flex" alignItems="center">
+                                    <FormLabel htmlFor="sms" mb="0">
+                                        SMS Notifications
+                                    </FormLabel>
+                                    <Switch id="sms" isChecked={notificationPreferences.sms} onChange={handleNotificationChange} />
+                                </FormControl>
+                                <FormControl display="flex" alignItems="center">
+                                    <FormLabel htmlFor="emails" mb="0">
+                                        Email Notifications
+                                    </FormLabel>
+                                    <Switch id="emails" isChecked={notificationPreferences.emails} onChange={handleNotificationChange} />
+                                </FormControl>
+                                <FormControl display="flex" alignItems="center">
+                                    <FormLabel htmlFor="pushNotifications" mb="0">
+                                        Push Notifications
+                                    </FormLabel>
+                                    <Switch id="pushNotifications" isChecked={notificationPreferences.pushNotifications} onChange={handleNotificationChange} />
                                 </FormControl>
                             </Stack>
                         </TabPanel>
 
+                        {/* Language Panel */}
                         <TabPanel>
-                            <Stack spacing={6} mt={6} className="p-4">
-                                <Text className="text-lg md:text-xl font-bold">
-                                    Two-factor Authentication
-                                </Text>
-                                <FormControl>
-                                    <Flex alignItems="center" gap={4}>
-                                        <Switch colorScheme="blue" size="lg" />
-                                        <Text className="text-md text-gray-600">
-                                            Enable or disable two-factor authentication
-                                        </Text>
-                                    </Flex>
-                                </FormControl>
-                            </Stack>
-
-                            <Text className="text-lg md:text-xl font-bold mt-8 p-4">
-                                Change Password
-                            </Text>
-                            <Grid templateColumns={{ base: '1fr', md: '1fr' }} gap={6} mt={4} className="p-4">
-                                <FormControl id="currentPassword">
-                                    <FormLabel className="text-lg md:text-xl">Current Password</FormLabel>
-                                    <Input type="password" placeholder="********" size="lg" className="border-gray-300" />
-                                </FormControl>
-                                <FormControl id="newPassword">
-                                    <FormLabel className="text-lg md:text-xl">New Password</FormLabel>
-                                    <Input type="password" placeholder="********" size="lg" className="border-gray-300" />
-                                </FormControl>
-                            </Grid>
+                            <FormControl className="p-4">
+                                <FormLabel className="text-lg md:text-xl">Preferred Language</FormLabel>
+                                <Select value={language} onChange={handleLanguageChange} size="lg" className="border-gray-300">
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    {/* Add more languages as needed */}
+                                </Select>
+                            </FormControl>
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
 
                 <Flex justify="end" position="absolute" bottom="20px" right="20px">
-                    <Button colorScheme="blue" size="lg" className="h-16 w-44">
+                    <Button colorScheme="blue" size="lg" className="h-16 w-44" onClick={handleSave}>
                         Save
                     </Button>
                 </Flex>

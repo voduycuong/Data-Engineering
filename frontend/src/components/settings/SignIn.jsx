@@ -43,7 +43,7 @@ const SignIn = () => {
                     duration: 3000,
                     isClosable: true,
                 });
-                navigate('/metrics');
+                navigate('/settings');
             } else {
                 toast({
                     title: "Error",
