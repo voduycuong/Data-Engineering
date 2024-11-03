@@ -190,7 +190,7 @@ export default function SettingsPage() {
                                         </FormControl>
                                         <FormControl id="password">
                                             <FormLabel className="text-lg md:text-xl">Password</FormLabel>
-                                            <Input type="password" placeholder="********" onChange={handleChange} size="lg" className="border-gray-300" />
+                                            <Input type="password" placeholder="********" readOnly  onChange={handleChange} size="lg" className="border-gray-300" />
                                         </FormControl>
                                         <FormControl id="dob">
                                             <FormLabel className="text-lg md:text-xl">Date of Birth</FormLabel>
