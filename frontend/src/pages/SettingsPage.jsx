@@ -215,46 +215,59 @@ export default function SettingsPage() {
 
                         {/* Notifications Panel */}
                         <TabPanel>
-                            <Stack spacing={6} className="p-4">
-                                <FormControl display="flex" alignItems="center">
-                                    <FormLabel htmlFor="allowAll" mb="0">
-                                        Allow All Notifications
-                                    </FormLabel>
-                                    <Switch id="allowAll" isChecked={notificationPreferences.allowAll} onChange={handleNotificationChange} />
+                            <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={8} className="p-4">
+                                <FormControl>
+                                    <FormLabel className="text-lg md:text-xl">Currency</FormLabel>
+                                    <Select placeholder="Select Currency" size="lg" className="border-gray-300">
+                                        <option>US Dollar</option>
+                                        <option>Euro</option>
+                                    </Select>
                                 </FormControl>
-                                <FormControl display="flex" alignItems="center">
-                                    <FormLabel htmlFor="sms" mb="0">
-                                        SMS Notifications
-                                    </FormLabel>
-                                    <Switch id="sms" isChecked={notificationPreferences.sms} onChange={handleNotificationChange} />
+                                <FormControl>
+                                    <FormLabel className="text-lg md:text-xl">Time Zone</FormLabel>
+                                    <Select placeholder="Select Time Zone" size="lg" className="border-gray-300">
+                                        <option>(GMT+00:00) UTC</option>
+                                        <option>(GMT-08:00) Pacific Time</option>
+                                    </Select>
                                 </FormControl>
+                            </Grid>
+                            <Stack spacing={6} mt={6} className="p-4">
                                 <FormControl display="flex" alignItems="center">
-                                    <FormLabel htmlFor="emails" mb="0">
-                                        Email Notifications
-                                    </FormLabel>
-                                    <Switch id="emails" isChecked={notificationPreferences.emails} onChange={handleNotificationChange} />
-                                </FormControl>
-                                <FormControl display="flex" alignItems="center">
-                                    <FormLabel htmlFor="pushNotifications" mb="0">
-                                        Push Notifications
-                                    </FormLabel>
-                                    <Switch id="pushNotifications" isChecked={notificationPreferences.pushNotifications} onChange={handleNotificationChange} />
+                                    <FormLabel className="text-lg md:text-xl mb-0">Notification</FormLabel>
+                                    <Switch colorScheme="blue" size="lg" />
                                 </FormControl>
                             </Stack>
                         </TabPanel>
 
                         {/* Language Panel */}
                         <TabPanel>
-                            <FormControl className="p-4">
-                                <FormLabel className="text-lg md:text-xl">Preferred Language</FormLabel>
-                                <Select value={language} onChange={handleLanguageChange} size="lg" className="border-gray-300">
-                                    <option value="en">English</option>
-                                    <option value="es">Spanish</option>
-                                    <option value="fr">French</option>
-                                    <option value="de">German</option>
-                                    {/* Add more languages as needed */}
-                                </Select>
-                            </FormControl>
+                            <Stack spacing={6} mt={6} className="p-4">
+                                <Text className="text-lg md:text-xl font-bold">
+                                    Two-factor Authentication
+                                </Text>
+                                <FormControl>
+                                    <Flex alignItems="center" gap={4}>
+                                        <Switch colorScheme="blue" size="lg" />
+                                        <Text className="text-md text-gray-600">
+                                            Enable or disable two-factor authentication
+                                        </Text>
+                                    </Flex>
+                                </FormControl>
+                            </Stack>
+
+                            <Text className="text-lg md:text-xl font-bold mt-8 p-4">
+                                Change Password
+                            </Text>
+                            <Grid templateColumns={{ base: '1fr', md: '1fr' }} gap={6} mt={4} className="p-4">
+                                <FormControl id="currentPassword">
+                                    <FormLabel className="text-lg md:text-xl">Current Password</FormLabel>
+                                    <Input type="password" placeholder="********" size="lg" className="border-gray-300" />
+                                </FormControl>
+                                <FormControl id="newPassword">
+                                    <FormLabel className="text-lg md:text-xl">New Password</FormLabel>
+                                    <Input type="password" placeholder="********" size="lg" className="border-gray-300" />
+                                </FormControl>
+                            </Grid>
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

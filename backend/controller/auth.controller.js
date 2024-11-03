@@ -64,7 +64,7 @@ export const signin = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find({}, '-password'); // Exclude the password field
+        const users = await User.find({}, '-password');
         res.status(200).json(users);
     } catch (err) {
         console.error(err);
